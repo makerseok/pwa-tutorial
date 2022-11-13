@@ -1,5 +1,5 @@
-const staticCashName = 'site-static-v5';
-const dynamicCasheName = 'site-dynamic-v1';
+const staticCashName = 'site-static-v6';
+const dynamicCasheName = 'site-dynamic-v6';
 const assets = [
   '/',
   '/index.html',
