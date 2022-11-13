@@ -1,7 +1,7 @@
-const staticCashName = 'site-static-v3';
+const staticCashName = 'site-static-v4';
+const dynamicCashe = 'site-dynamic-v1';
 const assets = [
   '/',
-  '/manifest.json',
   '/index.html',
   '/js/app.js',
   '/js/ui.js',
@@ -44,7 +44,14 @@ self.addEventListener('fetch', evt => {
   // console.log('fetch event', evt);
   evt.respondWith(
     caches.match(evt.request).then(cacheRes => {
-      return cacheRes || fetch(evt.request);
+      return (
+        cacheRes ||
+        fetch(evt.request).then(async fetchRes => {
+          const cache = await caches.open(dynamicCashe);
+          cache.put(evt.request.url, fetchRes.clone());
+          return fetchRes;
+        })
+      );
     }),
   );
 });
