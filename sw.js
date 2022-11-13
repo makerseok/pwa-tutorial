@@ -1,5 +1,5 @@
-const staticCashName = 'site-static-v4';
-const dynamicCashe = 'site-dynamic-v1';
+const staticCashName = 'site-static-v5';
+const dynamicCasheName = 'site-dynamic-v1';
 const assets = [
   '/',
   '/index.html',
@@ -11,6 +11,7 @@ const assets = [
   '/img/dish.png',
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://fonts.gstatic.com/s/materialicons/v139/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2',
+  '/pages/fallback.html',
 ];
 
 // install event
@@ -32,7 +33,7 @@ self.addEventListener('activate', evt => {
       // console.log(keys);
       return Promise.all(
         keys
-          .filter(key => key !== staticCashName)
+          .filter(key => key !== staticCashName && key !== dynamicCasheName)
           .map(key => caches.delete(key)),
       );
     }),
@@ -43,15 +44,18 @@ self.addEventListener('activate', evt => {
 self.addEventListener('fetch', evt => {
   // console.log('fetch event', evt);
   evt.respondWith(
-    caches.match(evt.request).then(cacheRes => {
-      return (
-        cacheRes ||
-        fetch(evt.request).then(async fetchRes => {
-          const cache = await caches.open(dynamicCashe);
-          cache.put(evt.request.url, fetchRes.clone());
-          return fetchRes;
-        })
-      );
-    }),
+    caches
+      .match(evt.request)
+      .then(cacheRes => {
+        return (
+          cacheRes ||
+          fetch(evt.request).then(async fetchRes => {
+            const cache = await caches.open(dynamicCasheName);
+            cache.put(evt.request.url, fetchRes.clone());
+            return fetchRes;
+          })
+        );
+      })
+      .catch(() => caches.match('/pages/fallback.html')),
   );
 });
