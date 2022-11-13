@@ -1,6 +1,7 @@
-const staticCashName = 'site-static';
+const staticCashName = 'site-static-v3';
 const assets = [
   '/',
+  '/manifest.json',
   '/index.html',
   '/js/app.js',
   '/js/ui.js',
@@ -9,6 +10,7 @@ const assets = [
   '/css/materialize.min.css',
   '/img/dish.png',
   'https://fonts.googleapis.com/icon?family=Material+Icons',
+  'https://fonts.gstatic.com/s/materialicons/v139/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2',
 ];
 
 // install event
@@ -25,6 +27,16 @@ self.addEventListener('install', evt => {
 // activate event
 self.addEventListener('activate', evt => {
   // console.log('service worker has been activated');
+  evt.waitUntil(
+    caches.keys().then(keys => {
+      // console.log(keys);
+      return Promise.all(
+        keys
+          .filter(key => key !== staticCashName)
+          .map(key => caches.delete(key)),
+      );
+    }),
+  );
 });
 
 // fetch event
